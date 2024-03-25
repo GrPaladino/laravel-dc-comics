@@ -38,6 +38,8 @@
         </table>
 
         <a href="{{route('comics.create')}}" class="btn btn-primary">Inserisci nuovo comic</a>
+
+        {{$comics->links()}}
     </div>
 </section>
 @endsection
