@@ -3,9 +3,9 @@
 @section('title', 'Pagina iniziale')
 
 @section('main-content')
-  <section>
+<section>
     <div class="container py-4">
-      <h1>Laravel with Bootstrap + Vite</h1>
+        <h1>Laravel Comics</h1>
     </div>
-  </section>
+</section>
 @endsection
