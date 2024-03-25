@@ -9,6 +9,8 @@ class Comic extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['title', 'description', 'thumb', 'price', 'series', 'sale_date', 'type'];
+
     public function getPrice()
     {
         return '€' . $this->price;
