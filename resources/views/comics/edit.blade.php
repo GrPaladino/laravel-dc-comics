@@ -38,7 +38,7 @@
             </div>
             <div class="col-12">
                 <label for="description" class="form-label">Descrizione</label>
-                <textarea class="form-control" id="description" name="description" rows="5" value="{{$comic->description}}"></textarea>
+                <textarea class="form-control" id="description" name="description" rows="5">{{$comic->description}}</textarea>
             </div>
 
             <div class="col-3">

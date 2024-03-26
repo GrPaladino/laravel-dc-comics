@@ -19,6 +19,8 @@
                     <th scope="col">Data di uscita</th>
                     <th scope="col">Categoria</th>
                     <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +36,14 @@
                     </td>
                     <td>
                         <a class="ms-3" href="{{route('comics.edit', $comic)}}"><i class="fa-solid fa-pencil"></i></a>
+                    </td>
+                    <td class="pt-0">
+                        <form action="{{route('comics.destroy', $comic)}}" method="POST">
+                            @csrf
+                            @method('DELETE')
 
+                            <button class="btn btn-link"><i class="fa-solid fa-trash text-danger"></i></button>
+                        </form>
                     </td>
                 </tr>
                 @empty
