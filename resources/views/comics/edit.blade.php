@@ -7,7 +7,9 @@
     <div class="container py-4">
         <h2>Modifica {{$comic->title}}</h2>
 
+        <a href="{{route('comics.index')}}" class="btn btn-primary my-3">Torna alla lista</a>
         <a href="{{route('comics.show', $comic)}}" class="btn btn-primary my-3">Torna alle info</a>
+
 
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#comic-{{$comic->id}}">
