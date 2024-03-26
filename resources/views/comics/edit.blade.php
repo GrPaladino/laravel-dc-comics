@@ -7,6 +7,9 @@
     <div class="container py-4">
         <h2>Modifica {{$comic->title}}</h2>
 
+        <a href="{{route('comics.index')}}" class="btn btn-primary my-3">Torna alla lista</a>
+
+
         <form action="{{route("comics.update", $comic)}}" method="post" class="row g-3">
             @csrf
             @method('PATCH')
