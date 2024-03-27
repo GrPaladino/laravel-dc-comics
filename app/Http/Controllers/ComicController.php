@@ -43,7 +43,7 @@ class ComicController extends Controller
 
         $comic->save();
 
-        return redirect()->route('comics.show', compact('comic'));
+        return redirect()->route('comics.show', compact('comic'))->with('message-class', 'alert-success')->with('message', 'Comic inserito correttamente.');
 
     }
 
@@ -81,7 +81,7 @@ class ComicController extends Controller
     {
         $data = $request->all();
         $comic->update($data);
-        return redirect()->route('comics.show', $comic);
+        return redirect()->route('comics.show', $comic)->with('message-class', 'alert-success')->with('message', 'Comic modificato correttamente.');
     }
 
     /**
@@ -94,6 +94,6 @@ class ComicController extends Controller
     {
         $comic->delete();
 
-        return redirect()->route('comics.index');
+        return redirect()->route('comics.index')->with('message-class', 'alert-danger')->with('message', 'Comic eliminato.');
     }
 }
