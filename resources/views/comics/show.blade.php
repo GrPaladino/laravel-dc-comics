@@ -14,22 +14,28 @@
         </button>
 
         <ul>
-            <li class="h1">
+            <li class="h1 my-3">
                 {{$comic->title}}
+                <hr>
             </li>
-            <li>
+            <li class="my-2">
+                <strong>Serie: </strong>
                 {{$comic->series}}
             </li>
-            <li>
+            <li class="my-2">
+                <strong>Descrizione: </strong>
                 {{$comic->description}}
             </li>
-            <li>
+            <li class="my-2">
+                <strong>Genere: </strong>
                 {{$comic->type}}
             </li>
-            <li>
+            <li class="my-2">
+                <strong>Data di uscita: </strong>
                 {{$comic->sale_date}}
             </li>
-            <li>
+            <li class="my-2">
+                <strong>Prezzo: </strong>
                 {{$comic->getPrice()}}
             </li>
         </ul>

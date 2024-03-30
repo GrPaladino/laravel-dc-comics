@@ -26,7 +26,7 @@
             <tbody>
                 @forelse($comics as $comic)
                 <tr>
-                    <td>{{$comic->title}}</td>
+                    <td>{{$comic->series}}</td>
                     <td>{{$comic->description}}</td>
                     <td>{{$comic->getPrice()}}</td>
                     <td>{{$comic->sale_date}}</td>

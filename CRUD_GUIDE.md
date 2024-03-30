@@ -10,6 +10,16 @@
     - [C - CREATE](#c---create)
       - [create - Form](#create---form)
       - [store - Inserimento](#store---inserimento)
+    - [U - UPDATE](#u---update)
+      - [edit - Form](#edit---form)
+      - [update - Modifica](#update---modifica)
+    - [D - DELETE](#d---delete)
+      - [delete - Form e modale](#delete---form-e-modale)
+      - [destroy - Eliminazione](#destroy---eliminazione)
+  - [La validazione](#la-validazione)
+    - [Il metodo validate](#il-metodo-validate)
+    - [Validazione nel controller](#validazione-nel-controller)
+    - [Validazione nelle viste](#il-metodo-validate)
 
 # REALIZZARE UNA CRUD
 
@@ -399,4 +409,346 @@ public function store(Request $request)
     $pasta->save();
     return redirect()->route('pastas.show', $pasta);
 }
+```
+
+#### update - Modifica
+
+Nel metodo `update()` gestiremo la logica della modifica reindirizzando poi l'utente alla rotta `show()`
+
+```php
+// App/Http/Controllers/PastaController.php
+
+/**
+ * Update the specified resource in storage.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  \App\Models\Pasta $pasta
+ * @return \Illuminate\Http\Response
+ */
+public function update(Request $request, Pasta $pasta)
+{
+    $data = $request->all();
+    $pasta->update($data);
+    return redirect()->route('pastas.show', $pasta);
+}
+```
+
+### D - DELETE
+
+#### delete - Form e modale
+
+Bisogna aggiungere il bottone per l'eliminazione della risorsa. Attenzione: il click del `button` dovrà far apparire una modale di conferma dell'operazione prima di cancellare effettivamente il record.
+
+NB: l'attributo `data-bs-target` collegherà il `button` alla modale con `id` corrispondente
+
+```blade
+{{-- resources/views/pastas/index.blade.php --}}
+
+<table class="table">
+    ...
+    <tbody>
+        @foreach ($pastas as $pasta)
+        <tr>
+            <th scope="row">{{ $pasta->id }}</th>
+            ...
+            <td>
+                <a href="{{ route('pastas.show', $pasta) }}">Dettaglio</a>
+
+                <a href="{{ route('pastas.edit', $pasta) }}">Modifica</a>
+
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal-{{ $pasta->id }}">
+                  Elimina
+                </button>
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+```
+
+Vanno poi generate le modali corrispondenti ai bottoni, da posizionare prima della chiusura del tag `body`.
+
+Il pulsante "Elimina" in ogni modale dovrà essere all'interno di un vero e proprio `form` contenente:
+
+- method `POST`
+- action che punta alla rotta del destroy
+- la direttiva `@method('DELETE')`
+- la direttiva `@csrf` per generare il token di sicurezza
+
+```blade
+{{-- resources/views/pastas/index.blade.php --}}
+
+@foreach ($pastas as $pasta)
+  <!-- Modal -->
+  <div class="modal fade" id="delete-modal-{{ $pasta->id }}" tabindex="-1" aria-labelledby="delete-modal-{{ $pasta->id }}-label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="delete-modal-{{ $pasta->id }}-label">Conferma eliminazione</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-start">
+          Sei sicuro di voler eliminare la pasta {{ $pasta->name }} N° {{ $pasta->number }} con ID
+          {{ $pasta->id }}? <br>
+          L'operazione non è reversibile
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+
+          <form action="{{ route('pastas.destroy', $pasta) }}" method="POST" class="">
+            @method('DELETE')
+            @csrf
+
+            <button type="submit" class="btn btn-danger">Elimina</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+@endforeach
+```
+
+#### destroy - Eliminazione
+
+Non resta che gestire la logica dell'eliminazione nel controller
+
+```php
+// App/Http/Controllers/PastaController.php
+
+/**
+ * Remove the specified resource from storage.
+ *
+ * @param  \App\Models\Pasta $pasta
+ * @return \Illuminate\Http\Response
+ */
+public function destroy(Pasta $pasta)
+{
+    $pasta->delete();
+    return redirect()->route('pastas.index');
+}
+```
+
+## La validazione
+
+### Il metodo `validate`
+
+Innanzitutto bisogna importare il validator nel controller:
+
+```php
+// App/Http/Controllers/PastaController.php
+
+use Illuminate\Support\Facades\Validator;
+```
+
+Di seguito va creato un metodo privato per la logica di validazione in fondo al controller. Nel metodo è necessario ricevere i dati da validare
+
+```php
+// App/Http/Controllers/PastaController.php
+
+private function validation($data) {
+
+}
+```
+
+Nel metodo statico `make` del `Validator`:
+
+- il primo parametro saranno i dati da validare (array associativo)
+- il secondo parametro saranno le regole di validazione (array associativo)
+- il terzo parametro (opzionale) saranno messaggi di errore customizzati (array associativo)
+
+```php
+// App/Http/Controllers/PastaController.php
+
+private function validation($data) {
+  Validator::make(
+    $data,
+    [
+      ... regole di validazione
+    ],
+    [
+      ... messaggi di errore
+    ]
+  )
+}
+```
+
+Al metodo make dovrà essere concatenato un metodo `->validate()` per eseguire la validazione, ed il risultato sarà ritornato dal nostro metodo privato.
+
+```php
+// App/Http/Controllers/PastaController.php
+
+private function validation($data) {
+  return Validator::make(
+    $data,
+    [
+      ... regole di validazione
+    ],
+    [
+      ... messaggi di errore
+    ]
+  )->validate();
+}
+```
+
+Il risultato finale potrebbe somigliare a questo:
+
+```php
+// App/Http/Controllers/PastaController.php
+
+private function validation($data) {
+  $validator = Validator::make(
+    $data,
+    [
+      'name' => 'required|string|max:20',
+      'number' => "required|integer|between:1,500",
+      "type" => "required|string|in:lunga,corta,cortissima",
+      "cooking_time" => "required|integer",
+      "weight" => "required|integer",
+      "img" => "nullable|string",
+      "description" => "nullable|string"
+    ],
+    [
+      'name.required' => 'Il nome è obbligatorio',
+      'name.string' => 'Il nome deve essere una stringa',
+      'name.max' => 'Il nome deve massimo di 20 caratteri',
+
+      'number.required' => 'Il numero è obbligatorio',
+      'number.integer' => 'Il numero deve essere un numero',
+      'number.unique' => 'Il numero deve essere unico',
+      'number.between' => 'Il numero deve essere compreso tra :min e :max',
+
+      'type.required' => 'Il tipo è obbligatorio',
+      'type.string' => 'Il tipo deve essere una stringa',
+      'type.in' => 'Il tipo deve un valore compreso tra "lunga", "corta", "cortissima"',
+
+      'cooking_time.required' => 'Il tempo di cottura è obbligatorio',
+      'cooking_time.integer' => 'Il tempo di cottura deve essere un numero',
+
+      'weight.required' => 'Il peso è obbligatorio',
+      'weight.integer' => 'Il peso deve essere un numero',
+
+      'img.string' => 'L\'immagine deve essere una stringa',
+
+      'description.string' => 'La descrizione deve essere una stringa',
+    ]
+  )->validate();
+
+  return $validator;
+}
+```
+
+Nel caso di validazione di campi unici, si può accettare anche l'id del record che si sta validando (in caso di modifica) per gestire il controllo in questo modo:
+
+```php
+// App/Http/Controllers/PastaController.php
+
+private function validation($data, $id = null) {
+  $unique_name_rule = ($id) ? "|unique:pastas,name,$id" : "|unique:pastas";
+  $unique_number_rule = ($id) ? "|unique:pastas,number,$id" : "|unique:pastas";
+
+  return Validator::make(
+    $data,
+    [
+      ...
+      'name' => "required|string|max:20" . $unique_name_rule,
+      'number' => "required|integer|between:1,500" . $unique_number_rule,
+      ...
+    ],
+    [
+      ...
+    ]
+  )->validate();
+}
+```
+
+### Validazione nel controller
+
+Nel metodo store:
+
+```php
+// App/Http/Controllers/PastaController.php
+
+public function store(Request $request)
+{
+    $data = $this->validation($request->all());
+    ...
+}
+```
+
+Nel metodo update:
+
+```php
+// App/Http/Controllers/PastaController.php
+
+public function update(Request $request, Pasta $pasta)
+{
+  $data = $this->validation($request->all(), $pasta->id);
+  ...
+}
+```
+
+### Validazione nelle viste
+
+E' possibile stampare in via generica tutti gli errori di validazione:
+
+```blade
+{{-- resources/views/pastas/create.blade.php --}}
+{{-- resources/views/pastas/edit.blade.php --}}
+
+@if ($errors->any())
+  <div class="alert alert-danger">
+    <h4>Correggi i seguenti errori per proseguire: </h4>
+    <ul>
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
+```
+
+tuttavia vanno specificati i valori `old` (ossia quelli dell'inserimento la cui validazione è fallita) per ognuno degli input dei form.
+
+#### create
+
+Per ogni input:
+
+- La direttiva `@error('field_name')` permette di verificare la validazione dei singoli input. Può essere usata per stampare la classe `is-invalid` di BS
+- Va aggiunto il valore `old` come default
+- Va aggiunto il messaggio di errore nel `div.invalid-feedback` successivo all'input (la variabile `$message` è generata automaticamente dalla direttiva `@error`)
+
+```blade
+<input
+  type="text"
+  class="form-control @error('number') is-invalid @enderror"
+  id="number"
+  name="number"
+  value="{{ old('number') }}"
+>
+@error('number')
+  <div class="invalid-feedback">
+    {{ $message }}
+  </div>
+@enderror
+```
+
+#### edit
+
+Per ogni input vale quanto descritto precedentemente nella sezione `create`.
+A differenza del `create` possiamo sfruttare il null coalescent operator per i valori di default degli input:
+
+```blade
+<input
+  type="text"
+  class="form-control @error('number') is-invalid @enderror"
+  id="number"
+  name="number"
+  value="{{ old('number') ?? $pasta->number }}"
+>
+@error('number')
+  <div class="invalid-feedback">
+    {{ $message }}
+  </div>
+@enderror
 ```

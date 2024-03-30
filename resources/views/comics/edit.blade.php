@@ -23,32 +23,80 @@
 
             <div class="col-4">
                 <label for="title" class="form-label">Titolo</label>
-                <input type="text" class="form-control" id="title" name="title" max="200" value="{{$comic->title}}">
+                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" max="200" value="{{ old('title') ?? $comic->title }}">
+
+                @error('title')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+
             </div>
             <div class="col-4">
                 <label for="series" class="form-label">Serie</label>
-                <input type="text" class="form-control" id="series" name="series" max="100" value="{{$comic->series}}">
+                <input type="text" class="form-control @error('series') is-invalid @enderror" id="series" name="series" max="100" value="{{ old('series') ?? $comic->series }}">
+
+                @error('series')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+
             </div>
             <div class="col-4">
                 <label for="type" class="form-label">Categoria</label>
-                <input type="text" class="form-control" id="type" name="type" max="30" value="{{$comic->type}}">
+                <input type="text" class="form-control @error('type') is-invalid @enderror" id="type" name="type" max="30" value="{{ old("type") ?? $comic->type }}">
+
+                @error('type')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+
             </div>
             <div class="col-4">
                 <label for="sale_date" class="form-label">Data di Uscita</label>
-                <input type="date" class="form-control" id="sale_date" name="sale_date" value="{{$comic->sale_date}}">
+                <input type="date" class="form-control @error('sale_date') is-invalid @enderror" id="sale_date" name="sale_date" value="{{ old("sale_date") ?? $comic->sale_date }}">
+
+                @error('sale_date')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+
             </div>
             <div class="col-4">
                 <label for="price" class="form-label">Prezzo</label>
-                <input type='text' class="form-control" id="price" name="price" value="{{$comic->price}}">
+                <input type='text' class="form-control @error('price') is-invalid @enderror" id="price" name="price" value="{{ old("price") ?? $comic->price }}">
+
+                @error('price')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
 
             </div>
             <div class="col-4">
                 <label for="thumb" class="form-label">Url immagine</label>
-                <input type="url" class="form-control" id="thumb" name="thumb" value="{{$comic->thumb}}">
+                <input type="url" class="form-control @error('thumb') is-invalid @enderror" id="thumb" name="thumb" value="{{ old("price") ?? $comic->thumb }}">
+
+                @error('thumb')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+
             </div>
             <div class="col-12">
                 <label for="description" class="form-label">Descrizione</label>
-                <textarea class="form-control" id="description" name="description" rows="5">{{$comic->description}}</textarea>
+                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="5">{{ old("price") ?? $comic->description }}</textarea>
+
+                @error('description')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+
             </div>
 
             <div class="col-3">
